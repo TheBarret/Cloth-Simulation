@@ -1,9 +1,7 @@
 # Cloth-Simulation
-Using Hook's Law to simulate cloth dynamics
+Very basic implementation of Hook's Law to simulate cloth dynamics
 
-Very basic example, not much to it, with the exception that i used a basic avoidance check to create some control over its behavior.
-
-It has control over the following factors:
+Has control over the following factors:
 - Format (size and spacing)
 - Gravity
 - Breaking force (improves realism)
