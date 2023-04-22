@@ -1,32 +1,33 @@
 ﻿
-Imports System.Text.RegularExpressions
 
 Public Class Simulator
     Public Property Bounds As Rectangle
     Public Property Materials As List(Of Material)
+    Public Event ForceUpdate(f As Vector2)
 
-    Sub New(bounds As Rectangle)
+    Sub New(bounds As Rectangle, m As Material)
         Me.Bounds = bounds
         Me.Materials = New List(Of Material)
-        Me.Materials.Add(Me.Create(20, 20, 16, 0.1F, 2.0F, 1.0F, Color.Black, New Vector2(0F, -20.0F), Me.Bounds))
+        Me.Materials.Add(m)
     End Sub
 
     Public Sub Update(dt As Single)
+        If (dt > 1.0) Then dt = 1.0
         For Each mat In Me.Materials
-            mat.Update(mat.Connections, dt)
+            mat.Update(dt)
         Next
     End Sub
 
     Public Sub Draw(g As Graphics)
         For Each material In Me.Materials
-            For Each spring In material.Springs
-                g.DrawLine(New Pen(Color.Black, 2) With {.DashStyle = Drawing2D.DashStyle.DashDot}, spring.Top.Position.ToPointF, spring.Bottom.Position.ToPointF)
+            For Each spring In material.Fibers
+                g.DrawLine(New Pen(spring.ToColor), spring.Top.Position.ToPointF, spring.Bottom.Position.ToPointF)
             Next
         Next
     End Sub
 
-    Public Function Create(rows As Integer, cols As Integer, spacing As Single, damping As Single, mass As Single, stifness As Single, tint As Color, gravity As Vector2, boundary As Rectangle) As Material
-        Dim mat As New Material With {.Columns = cols, .Rows = rows, .Damping = damping, .Tint = tint, .Gravity = gravity}
+    Public Shared Function Create(rows As Integer, cols As Integer, spacing As Single, boundary As Rectangle, damping As Single, mass As Single, stiffness As Single, failure As Single, failureR As Single, assertion As Single, rippleFreq As Single, rippleAmpl As Single, tint As Color, gravity As Vector2) As Material
+        Dim mat As New Material With {.Columns = cols, .Rows = rows, .Damping = damping, .Tint = tint, .Gravity = gravity, .Ripple = AddressOf Math.Sin}
         Dim width As Single = cols * spacing
         Dim height As Single = rows * spacing
         Dim sx As Single = boundary.X + (boundary.Width - width) / 2
@@ -36,27 +37,23 @@ Public Class Simulator
             For c As Integer = 0 To cols - 1
                 Dim x As Single = sx + c * spacing
                 Dim y As Single = sy + r * spacing
-                If (r = (rows - 1)) Then
-                    mat.Connections.Add(New Connection(New Vector2(x, y), (r = 0), mass * 5))
-                Else
-                    mat.Connections.Add(New Connection(New Vector2(x, y), (r = 0), mass))
-                End If
+                mat.Connections.Add(New Connection(New Vector2(x, y), (r = 0), mass, spacing, assertion, rippleFreq, rippleAmpl))
             Next
         Next
-        ' Create horizontal springs
+        ' Create horizontal fibers
         For r As Integer = 0 To rows - 1
             For c As Integer = 0 To cols - 2
                 Dim i As Integer = r * cols + c
                 Dim j As Integer = i + 1
-                mat.Springs.Add(New Spring(mat.Connections(i), mat.Connections(j), spacing, stifness))
+                mat.Fibers.Add(New Fiber(mat.Connections(i), mat.Connections(j), spacing, stiffness, failure, failureR))
             Next
         Next
-        ' Create vertical springs
+        ' Create vertical fibers
         For r As Integer = 0 To rows - 2
             For c As Integer = 0 To cols - 1
                 Dim i As Integer = r * cols + c
                 Dim j As Integer = i + cols
-                mat.Springs.Add(New Spring(mat.Connections(i), mat.Connections(j), spacing, stifness))
+                mat.Fibers.Add(New Fiber(mat.Connections(i), mat.Connections(j), spacing, stiffness, failure, failureR))
             Next
         Next
         Return mat

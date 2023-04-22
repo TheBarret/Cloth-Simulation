@@ -99,7 +99,7 @@
     </Compile>
     <Compile Include="Connection.vb" />
     <Compile Include="Simulator.vb" />
-    <Compile Include="Spring.vb" />
+    <Compile Include="Fiber.vb" />
     <Compile Include="Vector2.vb" />
   </ItemGroup>
   <ItemGroup>
