@@ -2,25 +2,39 @@
     Public Property Rows As Integer
     Public Property Columns As Integer
     Public Property Tint As Color
+    Public Property Frequency As Single
+    Public Property Amplitude As Single
     Public Property Damping As Single
     Public Property Gravity As Vector2
-    Public Property Ripple As Func(Of Double, Double)
     Public Property Fibers As List(Of Fiber)
     Public Property Connections As List(Of Connection)
-    Private Property Broken As HashSet(Of Fiber)
+    Public Property Counter As Integer
+    Public Property Broken As HashSet(Of Fiber)
+
     Sub New()
-        Me.Damping = 0.9F
+        Me.Counter = 0
+        Me.Damping = 0.5F
+        Me.Frequency = 5.0F
+        Me.Amplitude = 0.5F
         Me.Gravity = New Vector2(0, 1.0F)
         Me.Fibers = New List(Of Fiber)
         Me.Connections = New List(Of Connection)
         Me.Broken = New HashSet(Of Fiber)
     End Sub
-
     Public Overrides Function ToString() As String
-        Return String.Format("Material with {0} Connections and {1} fibers [G[{2}],D{3}]", Me.Connections.Count, Me.Fibers.Count, Me.Gravity, Me.Damping)
+        Return String.Format("Material {0} Connections {1} fibers [G[{2}],D{3}]", Me.Connections.Count, Me.Fibers.Count, Me.Gravity, Me.Damping)
     End Function
 
-    Public Sub Update(dt As Single)
+    Public Sub Update(dt As Single, elapsed As Integer, callbackBreak As Action(Of CState))
+        'Validate and remove broken fibers
+        If (Me.Broken.Any) Then
+            For Each b As Fiber In Me.Broken
+                Me.Fibers.Remove(b)
+                Me.Counter += 1
+            Next
+            callbackBreak.Invoke(CState.Damaged)
+            Me.Broken.Clear()
+        End If
         'Update fibers with Hook's law
         For Each fbr As Fiber In Me.Fibers
             Dim top As Connection = fbr.Top
@@ -35,22 +49,17 @@
                 If (fbr.Broken) Then Me.HandleBroken(fbr)
             End If
         Next
-        'Validate and remove broken fibers
-        If (Me.Broken.Any) Then
-            For Each b As Fiber In Me.Broken
-                Me.Fibers.Remove(b)
-            Next
-            Me.Broken.Clear()
-        End If
         'Update connections
+        Dim noise As Vector2, dgrav As Vector2
         For Each conn As Connection In Me.Connections
             If Not conn.Fixed Then
-                Dim dgrav As Vector2 = Me.Gravity - Me.Damping
-                Dim noise As Single = conn.CreateNoise(dt, Me.Ripple)
+                noise = Simulator.Signal(Me.Frequency, Me.Amplitude, 1, conn.Position.X, dt)
+                dgrav = Me.Gravity - Me.Damping
                 conn.Velocity += ((dgrav * conn.Velocity) / conn.Mass) * dt
-                conn.Velocity.X += noise
-                Me.HandleCollision(conn, conn.Radius, conn.Assertion, dt)
+                conn.Velocity.X += noise.Y
+                conn.Velocity.Y += noise.X
                 conn.Position += conn.Velocity * dt
+                Me.HandleCollision(conn, conn.Radius, conn.Assertion, dt)
             End If
         Next
     End Sub
@@ -78,7 +87,7 @@
         Next
     End Sub
 
-    Public ReadOnly Property NetForceAvg As Vector2
+    Public ReadOnly Property Force As Vector2
         Get
             Dim tF As New Vector2(0, 0)
             For Each fbr As Fiber In Me.Fibers

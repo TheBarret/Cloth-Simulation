@@ -1,4 +1,5 @@
 ﻿Public Class Fiber
+    Public Property Visible As Boolean
     Public Property Top As Connection
     Public Property Bottom As Connection
     Public Property Length As Single
@@ -6,12 +7,13 @@
     Public Property Breakforce As Single
     Public Property Stiffness As Single
     Sub New(top As Connection, bottom As Connection, length As Single, stiffness As Single, breakforce As Single, breakrange As Single)
+        Me.Visible = True
         Me.Top = top
         Me.Bottom = bottom
         Me.Length = length
         Me.Force = Vector2.Empty
-        Me.Breakforce = breakforce + CSng(Simulator.Randomizer.NextDouble - breakrange)
         Me.Stiffness = stiffness
+        Me.Breakforce = breakforce + CSng(Simulator.Randomizer.NextDouble - breakrange)
     End Sub
     Public Function ToColor() As Color
         Dim result As Color = Color.DarkBlue
@@ -40,6 +42,6 @@
         End Get
     End Property
     Public Overrides Function ToString() As String
-        Return String.Format("Spring between {0} and {1} [L{2},S{3}]", Me.Top, Me.Bottom, Me.Length, Me.Stiffness)
+        Return String.Format("Spring L{0} S{1} [D{2}]", Me.Length, Me.Stiffness, Me.Distance)
     End Function
 End Class

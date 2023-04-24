@@ -1,0 +1,12 @@
+C:\Users\Niels\source\repos\Particles\bin\Debug\Particles.exe.config
+C:\Users\Niels\source\repos\Particles\bin\Debug\Particles.exe
+C:\Users\Niels\source\repos\Particles\bin\Debug\Particles.pdb
+C:\Users\Niels\source\repos\Particles\bin\Debug\Particles.xml
+C:\Users\Niels\source\repos\Particles\obj\Debug\Particles.vbproj.AssemblyReference.cache
+C:\Users\Niels\source\repos\Particles\obj\Debug\Particles.Editor.resources
+C:\Users\Niels\source\repos\Particles\obj\Debug\Particles.Resources.resources
+C:\Users\Niels\source\repos\Particles\obj\Debug\Particles.vbproj.GenerateResource.cache
+C:\Users\Niels\source\repos\Particles\obj\Debug\Particles.vbproj.CoreCompileInputs.cache
+C:\Users\Niels\source\repos\Particles\obj\Debug\Particles.exe
+C:\Users\Niels\source\repos\Particles\obj\Debug\Particles.xml
+C:\Users\Niels\source\repos\Particles\obj\Debug\Particles.pdb

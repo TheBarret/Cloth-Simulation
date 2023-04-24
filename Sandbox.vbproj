@@ -73,6 +73,10 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Canvas.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CState.vb" />
     <Compile Include="Editor.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -80,6 +84,7 @@
       <DependentUpon>Editor.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Extensions.vb" />
     <Compile Include="Material.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
@@ -101,6 +106,7 @@
     <Compile Include="Simulator.vb" />
     <Compile Include="Fiber.vb" />
     <Compile Include="Vector2.vb" />
+    <Compile Include="Plotter.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Editor.resx">
