@@ -10,12 +10,10 @@
     End Sub
 
 #Region "Functions"
+            ' TODO: this is wrong, needs math.sqrt().
+            ' Removed: magnitude function since its identical to length.
     Public Function Length() As Single
         Return (Me.X * Me.X) + (Me.Y * Me.Y)
-    End Function
-
-    Public Function Magnitude() As Single
-        Return CSng(Math.Sqrt(Me.X * Me.X + Me.Y * Me.Y))
     End Function
 
     Public Sub Normalize()
